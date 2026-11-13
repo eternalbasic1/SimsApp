@@ -4,7 +4,7 @@
 
 **Architecture:** one React Native Community CLI TypeScript WebView screen loading the existing website. The website owns authentication, chat, and storage. Shared code remains suitable for a future Android build.
 
-**Status:** plan only. No app scaffolding or implementation has started. This document follows the user's original SIMS prototype specification, with Android deferred by their latest instruction.
+**Status.** The starter and WebView implementation are in place. See the README for build and test results. Android is a later milestone.
 
 ## Constraints
 

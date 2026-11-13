@@ -2,7 +2,7 @@
 
 A separate React Native Community CLI application opening **https://simsgpt.6tst.com/chat** in a WebView. The SIMS website and backend remain unchanged. Android builds, APK/AAB files, TestFlight, store submission, and final branding are deferred.
 
-**Current status: implementation in progress.** The pinned React Native starter and iOS workspace have been created. Native compilation is in progress; signed installation and real company login/chat are not yet verified. Build commands remain planned until their actual results are recorded below.
+**Current status.** The SIMS WebView app is implemented. The untouched starter compiled for iPhone with signing disabled and is preserved at commit `52bc1f4`. The SIMS Release build compiled, was signed, and installed on the paired iPhone. The first launch was denied by iOS. The rebuilt and freshly signed Release app installed and launched successfully. Company sign-in and streamed chat are next in the device session.
 
 ## 1. Completed preparation
 
@@ -19,7 +19,7 @@ Verified on 13 November 2026:
 
 Shell setup adds Ruby/gem executables to PATH and selects NVM's default Node. Homebrew installed/upgraded dependencies, including Python 3.15 as its `python3`. Installing Watchman temporarily unlinked the existing `thrift` command and restored it afterward. See [toolchain notes](toolchain/SETUP.md) and the prepared Gemfile/lockfile.
 
-**Still unverified:** signing, native build compatibility, company login, streaming, file workflows, and a bundled Release launch without Metro.
+**Still to verify on the phone.** Signed starter launch, company login, streamed chat, and file workflows.
 
 ## 2. Target versions and identity
 
@@ -62,7 +62,7 @@ The Ruby PATH above is for Apple Silicon. On Intel, use `brew --prefix ruby@3.4`
 
 Initially skip simulator runtimes. Cancel unused simulator downloads; the iOS SDK listing does not mean a simulator runtime is installed or required.
 
-The prepared Gemfile constrains xcodeproj below 1.26.0. Actual compatibility with Xcode 27.2 remains a starter-build gate. Diagnose a concrete failure before changing constraints; record any necessary adjustment and updated lockfile.
+The locked CocoaPods and xcodeproj versions successfully generated the workspace and compiled the starter and SIMS Release builds with Xcode 27.2. The signed Release artifact currently targets iOS 17.0 or later.
 
 ## 4. Prepare the iPhone and signing
 
@@ -93,11 +93,11 @@ After app creation, add/select your account under Xcode Settings → Apple Accou
 7. Run automated checks and a bundled Release build with Metro stopped and the Mac disconnected.
 8. Update this README with actual changes, executed commands, resolved versions, test results, and remaining issues.
 
-See [the detailed iOS implementation plan](docs/ios-implementation-plan.md). This documentation does not itself start app implementation.
+See [the detailed iOS implementation plan](docs/ios-implementation-plan.md). The implementation plan records the original sequence and remaining device checks.
 
 ## 6. Clone and install dependencies after scaffolding
 
-These commands become usable once the actual app files exist:
+Use the local feature branch checkout for the current implementation. A fresh clone needs access to a branch containing the app commits.
 
 ```sh
 git clone https://github.com/eternalbasic1/SimsApp.git
@@ -142,7 +142,7 @@ If Debug cannot reach Metro, inspect the Mac/phone network, local-network permis
 
 An iOS device build produces a signed **`.app`**, not an APK or AAB. It bundles React Native JavaScript, while the hosted SIMS website still requires internet access.
 
-Planned commands from the app root, after signing works:
+Run these commands from the app root after selecting the development team in Xcode:
 
 ```sh
 xcodebuild \
@@ -169,21 +169,25 @@ Stop Metro with Ctrl+C, terminate the installed app, relaunch it from the phone'
 
 An **`.ipa`** is an iOS export/distribution package that needs an appropriate signing/export method. IPA distribution, archives for distribution, TestFlight, and store submission are deferred; a generally installable IPA is not promised for this personal-device milestone. Android APK/AAB instructions will be added and validated during the later Android phase.
 
-## 9. Automated checks after implementation
+## 9. Automated checks
 
 ```sh
 npx tsc --noEmit
 npm run lint
-npm test -- --runInBand
+npm test -- --runInBand --watchman=false
 ```
 
 Focused tests cover navigation decisions, authentication redirects/new windows, rejected schemes, main-page loading/error/Retry, and content-process recovery. Mocked tests do not establish that company login, native file selection, or real WebView streaming works; those require phone testing.
 
 ## 10. Device test report
 
-Every application workflow is currently **NOT TESTED**. During execution record **PASSED**, **FAILED**, or **NOT TESTED**, plus date, device/OS, commit/build configuration, steps, observed result, and evidence:
+TypeScript, lint, and all 39 Jest tests passed. Device workflow statuses follow. During execution record **PASSED**, **FAILED**, or **NOT TESTED**, plus date, device/OS, commit/build configuration, steps, observed result, and evidence:
 
-- NOT TESTED — Untouched starter signs, builds, installs, and launches.
+- PASSED — Untouched starter compiled for iPhone with signing disabled.
+- NOT TESTED — Signed starter installation and launch.
+- PASSED — SIMS Release compiled with embedded JavaScript, signed, and installed.
+- PASSED — Final signed Release installed and launched via devicectl with its embedded JavaScript bundle.
+- FAILED ON FIRST ATTEMPT, PASSED ON RETRY — Initial Release launch. iOS denied launch and reported a signature, entitlement, or developer-trust issue. The verified signature and provisioning profile match the installed build and paired device. If prompted, trust the developer profile in Settings → General → VPN & Device Management.
 - NOT TESTED — Company Microsoft login returns to protected SIMS chat inside the WebView; cancelled/failed login remains recoverable.
 - NOT TESTED — Message sends and the response streams incrementally.
 - NOT TESTED — Keyboard, typing, scrolling, rotation, notch/home-indicator safe areas.
