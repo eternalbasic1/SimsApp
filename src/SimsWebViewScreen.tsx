@@ -176,6 +176,10 @@ export default function SimsWebViewScreen() {
           automaticallyAdjustContentInsets={false}
           contentInsetAdjustmentBehavior="never"
           allowsBackForwardNavigationGestures
+          allowsInlineMediaPlayback
+          mediaCapturePermissionGrantType={
+            Platform.OS === 'ios' ? 'grantIfSameHostElsePrompt' : undefined
+          }
           webviewDebuggingEnabled={__DEV__}
         />
       </View>

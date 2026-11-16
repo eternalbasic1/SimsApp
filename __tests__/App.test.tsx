@@ -15,11 +15,16 @@ jest.mock('react-native-safe-area-context', () => {
 });
 
 jest.mock('../src/SimsWebViewScreen', () => () => null);
+jest.mock('../src/appPermissions', () => ({
+  requestLaunchPermissions: jest.fn(() => Promise.resolve([])),
+  openAppPermissionSettings: jest.fn(() => Promise.resolve()),
+}));
 
 test('mounts the SIMS screen at the app entry point', async () => {
   let tree!: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
     tree = ReactTestRenderer.create(<App />);
+    await Promise.resolve();
   });
   expect(tree.root.findAllByType(SimsWebViewScreen)).toHaveLength(1);
   await act(async () => tree.unmount());
