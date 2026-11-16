@@ -1,6 +1,6 @@
 # SIMS Mobile — iOS prototype
 
-A separate React Native Community CLI application opening **https://simsgpt.6tst.com/chat** in a WebView. The SIMS website and backend remain unchanged. Android builds, APK/AAB files, TestFlight, store submission, and final branding are deferred.
+A separate React Native Community CLI application opening **https://simsgpt.6tst.com/chat** in a WebView. The SIMS website and backend remain unchanged. The [Android device guide](docs/android-device-testing.md) covers the first Samsung APK and device testing. TestFlight and store submission are separate milestones.
 
 **Current status.** The SIMS WebView app is implemented. The untouched starter compiled for iPhone with signing disabled and is preserved at commit `52bc1f4`. The SIMS Release build compiled, was signed, and installed on the paired iPhone. The first launch was denied by iOS. The rebuilt and freshly signed Release app installed and launched successfully. Company sign-in and streamed chat are next in the device session.
 
@@ -25,7 +25,7 @@ Shell setup adds Ruby/gem executables to PATH and selects NVM's default Node. Ho
 
 - React Native **0.88.1**, React **19.3.0**, Community CLI **20.2.0**.
 - `react-native-webview` **17.1.0**; matching template TypeScript, Babel, Metro, Jest, and safe-area dependencies. Record exact installed versions in lockfiles.
-- Native project/scheme **SimsMobile**; display name **SIMS**; temporary bundle identifier **com.vineethreddy.simsmobile.dev**; starter artwork.
+- Native project/scheme **SimsMobile**; display name **SIMS GPT**; temporary bundle identifier **com.vineethreddy.simsmobile.dev**; starter artwork.
 - Public SIMS URL in TypeScript configuration. No `.env`, native token bridge, injected JavaScript, or new authentication/backend APIs.
 - Shared application code stays suitable for Android; its toolchain and deliverables are a later milestone.
 
