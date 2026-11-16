@@ -183,17 +183,14 @@ export default function SimsWebViewScreen() {
           webviewDebuggingEnabled={__DEV__}
         />
       </View>
-      {loading && !failed && (
+      {loading && !failed && !hasLoaded && (
         <View
-          pointerEvents={hasLoaded ? 'none' : 'auto'}
-          style={hasLoaded ? styles.progress : styles.overlay}
+          pointerEvents="auto"
+          style={styles.overlay}
           accessibilityLiveRegion="polite"
         >
-          <ActivityIndicator
-            size={hasLoaded ? 'small' : 'large'}
-            color="#273b74"
-          />
-          {!hasLoaded && <Text style={styles.message}>Loading SIMS…</Text>}
+          <ActivityIndicator size="large" color="#273b74" />
+          <Text style={styles.message}>Loading SIMS…</Text>
         </View>
       )}
       {failed && (
@@ -224,14 +221,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#ffffff',
-  },
-  progress: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    padding: 12,
-    borderRadius: 12,
     backgroundColor: '#ffffff',
   },
   title: { fontSize: 22, fontWeight: '600', color: '#172647' },
