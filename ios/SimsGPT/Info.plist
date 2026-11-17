@@ -29,7 +29,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>SimsGPT uses the camera when you capture photos or video to attach in chat.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>SimsGPT uses the microphone when the website records audio during chat.</string>
+	<string>SimsGPT uses the microphone when you dictate or record audio in chat.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>SimsGPT uses Apple speech recognition to turn what you say into text in the chat composer when you tap the microphone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>SimsGPT accesses your photo library when you choose images or files to upload.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
