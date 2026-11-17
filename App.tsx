@@ -1,14 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Alert, StatusBar, StyleSheet, View} from 'react-native';
-import {
-  initialWindowMetrics,
-  SafeAreaProvider,
-  SafeAreaView,
-} from 'react-native-safe-area-context';
+import {ActivityIndicator, Alert, View} from 'react-native';
+import {initialWindowMetrics, SafeAreaProvider} from 'react-native-safe-area-context';
 import {
   openAppPermissionSettings,
   requestLaunchPermissions,
 } from './src/appPermissions';
+import {AppShell, appShellStyles} from './src/appShell';
 import SimsWebViewScreen from './src/SimsWebViewScreen';
 
 export default function App() {
@@ -50,26 +47,15 @@ export default function App() {
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" />
+      <AppShell>
         {permissionsReady ? (
           <SimsWebViewScreen />
         ) : (
-          <View style={styles.bootstrap}>
+          <View style={appShellStyles.bootstrap}>
             <ActivityIndicator size="large" color="#273b74" />
           </View>
         )}
-      </SafeAreaView>
+      </AppShell>
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#ffffff'},
-  bootstrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-  },
-});

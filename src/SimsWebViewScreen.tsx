@@ -271,7 +271,7 @@ export default function SimsWebViewScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: 'transparent' },
   overlay: {
     ...StyleSheet.absoluteFill,
     alignItems: 'center',
