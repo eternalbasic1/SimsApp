@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  BackHandler,
   Linking,
   Platform,
   Pressable,
@@ -13,35 +12,27 @@ import {
 import { WebView } from 'react-native-webview';
 import { SIMS_URL } from './config';
 import { isMainDocumentError, navigationDecision } from './navigation';
+import { useHardwareBackHandler } from './useHardwareBackHandler';
+import {
+  parseHardwareBackMessage,
+  resolveHardwareBackAction,
+  WEB_HISTORY_BACK_SCRIPT,
+} from './webViewBack';
 
 export default function SimsWebViewScreen() {
   const webView = useRef<WebView>(null);
   const currentDocument = useRef(SIMS_URL);
   const recoverableDocument = useRef(SIMS_URL);
   const canGoBack = useRef(false);
+  const shellEntryUrl = useRef(SIMS_URL);
+  const lastNavUrl = useRef(SIMS_URL);
+  const hasInAppNavigation = useRef(false);
   const retryDocument = useRef<string | null>(null);
   const [uri, setUri] = useState(SIMS_URL);
   const [generation, setGeneration] = useState(0);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
-
-  useEffect(() => {
-    if (Platform.OS !== 'android') {
-      return;
-    }
-    const subscription = BackHandler.addEventListener(
-      'hardwareBackPress',
-      () => {
-        if (!canGoBack.current) {
-          return false;
-        }
-        webView.current?.goBack();
-        return true;
-      },
-    );
-    return () => subscription.remove();
-  }, []);
 
   const rememberDocument = (url: string) => {
     if (navigationDecision(url) === 'webview') {
@@ -85,6 +76,53 @@ export default function SimsWebViewScreen() {
       );
     });
   };
+
+  const noteNavigation = (url: string) => {
+    if (url !== lastNavUrl.current) {
+      if (url !== shellEntryUrl.current) {
+        hasInAppNavigation.current = true;
+      }
+      lastNavUrl.current = url;
+    }
+    if (canGoBack.current) {
+      hasInAppNavigation.current = true;
+    }
+  };
+
+  const onHardwareBack = useCallback((): boolean => {
+    const screen = failed
+      ? 'error'
+      : loading && !hasLoaded
+        ? 'initialLoading'
+        : 'webview';
+
+    const action = resolveHardwareBackAction({
+      screen,
+      canGoBack: canGoBack.current,
+      hasInAppNavigation: hasInAppNavigation.current,
+    });
+
+    switch (action.type) {
+      case 'dismissError':
+        setFailed(false);
+        setLoading(false);
+        if (canGoBack.current) {
+          webView.current?.goBack();
+        }
+        return true;
+      case 'webViewGoBack':
+        webView.current?.goBack();
+        return true;
+      case 'webHistoryBack':
+        webView.current?.injectJavaScript(WEB_HISTORY_BACK_SCRIPT);
+        return true;
+      case 'exitApp':
+      default:
+        return false;
+    }
+  }, [failed, hasLoaded, loading]);
+
+  useHardwareBackHandler(onHardwareBack);
 
   return (
     <View style={styles.container}>
@@ -133,7 +171,24 @@ export default function SimsWebViewScreen() {
             rememberDocument(nativeEvent.url);
             setLoading(true);
           }}
-          onLoad={() => setHasLoaded(true)}
+          onLoad={event => {
+            setHasLoaded(true);
+            const url = event?.nativeEvent?.url;
+            if (url) {
+              shellEntryUrl.current = url;
+              lastNavUrl.current = url;
+              hasInAppNavigation.current = false;
+            }
+          }}
+          onMessage={({ nativeEvent }) => {
+            const result = parseHardwareBackMessage(nativeEvent.data);
+            if (!result) {
+              return;
+            }
+            if (!result.moved) {
+              hasInAppNavigation.current = false;
+            }
+          }}
           onLoadEnd={({ nativeEvent }) => {
             setLoading(false);
             // Keep the source aligned after completed redirects. Native WebView
@@ -157,6 +212,7 @@ export default function SimsWebViewScreen() {
           onNavigationStateChange={state => {
             rememberDocument(state.url);
             canGoBack.current = state.canGoBack;
+            noteNavigation(state.url);
           }}
           onContentProcessDidTerminate={retry}
           onRenderProcessGone={() => {
@@ -176,20 +232,21 @@ export default function SimsWebViewScreen() {
           automaticallyAdjustContentInsets={false}
           contentInsetAdjustmentBehavior="never"
           allowsBackForwardNavigationGestures
+          allowsInlineMediaPlayback
+          mediaCapturePermissionGrantType={
+            Platform.OS === 'ios' ? 'grantIfSameHostElsePrompt' : undefined
+          }
           webviewDebuggingEnabled={__DEV__}
         />
       </View>
-      {loading && !failed && (
+      {loading && !failed && !hasLoaded && (
         <View
-          pointerEvents={hasLoaded ? 'none' : 'auto'}
-          style={hasLoaded ? styles.progress : styles.overlay}
+          pointerEvents="auto"
+          style={styles.overlay}
           accessibilityLiveRegion="polite"
         >
-          <ActivityIndicator
-            size={hasLoaded ? 'small' : 'large'}
-            color="#273b74"
-          />
-          {!hasLoaded && <Text style={styles.message}>Loading SIMS…</Text>}
+          <ActivityIndicator size="large" color="#273b74" />
+          <Text style={styles.message}>Loading SIMS…</Text>
         </View>
       )}
       {failed && (
@@ -214,20 +271,12 @@ export default function SimsWebViewScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: 'transparent' },
   overlay: {
     ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#ffffff',
-  },
-  progress: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    padding: 12,
-    borderRadius: 12,
     backgroundColor: '#ffffff',
   },
   title: { fontSize: 22, fontWeight: '600', color: '#172647' },

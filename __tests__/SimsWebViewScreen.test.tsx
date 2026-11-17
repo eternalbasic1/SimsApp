@@ -1,9 +1,19 @@
 import React from 'react';
-import { Alert, Linking, Text } from 'react-native';
+import { Alert, BackHandler, Linking, Platform, Text } from 'react-native';
 import ReactTestRenderer, { act } from 'react-test-renderer';
 import SimsWebViewScreen from '../src/SimsWebViewScreen';
 
 const mockReload = jest.fn();
+const mockGoBack = jest.fn();
+const mockInjectJavaScript = jest.fn();
+let hardwareBackHandler: (() => boolean) | undefined;
+
+const hardwareBack = (): boolean => {
+  if (!hardwareBackHandler) {
+    throw new Error('hardware back was not registered');
+  }
+  return hardwareBackHandler();
+};
 jest.mock(
   'react-native-webview',
   () => {
@@ -11,7 +21,11 @@ jest.mock(
     const NativeView = require('react-native').View;
     return {
       WebView: ReactModule.forwardRef((props: object, ref: unknown) => {
-        ReactModule.useImperativeHandle(ref, () => ({ reload: mockReload }));
+        ReactModule.useImperativeHandle(ref, () => ({
+          reload: mockReload,
+          goBack: mockGoBack,
+          injectJavaScript: mockInjectJavaScript,
+        }));
         return ReactModule.createElement(NativeView, {
           ...props,
           testID: 'native-webview',
@@ -29,6 +43,17 @@ const texts = () =>
 
 beforeEach(async () => {
   mockReload.mockClear();
+  mockGoBack.mockClear();
+  mockInjectJavaScript.mockClear();
+  hardwareBackHandler = undefined;
+  Object.defineProperty(Platform, 'OS', {
+    configurable: true,
+    value: 'android',
+  });
+  jest.spyOn(BackHandler, 'addEventListener').mockImplementation((_, handler) => {
+    hardwareBackHandler = handler;
+    return { remove: jest.fn() };
+  });
   await act(async () => {
     tree = ReactTestRenderer.create(<SimsWebViewScreen />);
   });
@@ -223,6 +248,59 @@ it('ignores external popup destinations without a verified tap', async () => {
     }),
   );
   expect(openURL).not.toHaveBeenCalled();
+});
+
+it('dismisses the native error overlay on hardware back', async () => {
+  await act(async () =>
+    webview().props.onError({ nativeEvent: { description: 'offline' } }),
+  );
+  expect(texts()).toContain('Unable to load SIMS');
+  let consumed = false;
+  await act(async () => {
+    consumed = hardwareBack();
+  });
+  expect(consumed).toBe(true);
+  expect(texts()).not.toContain('Unable to load SIMS');
+});
+
+it('navigates the WebView back when it has native history', async () => {
+  await act(async () =>
+    webview().props.onLoadEnd({
+      nativeEvent: { url: 'https://simsgpt.6tst.com/chat' },
+    }),
+  );
+  await act(async () =>
+    webview().props.onNavigationStateChange({
+      url: 'https://simsgpt.6tst.com/dashboard',
+      canGoBack: true,
+    }),
+  );
+  let consumed = false;
+  await act(async () => {
+    consumed = hardwareBack();
+  });
+  expect(consumed).toBe(true);
+  expect(mockGoBack).toHaveBeenCalledTimes(1);
+});
+
+it('falls back to in-page history for SPA screens without a native stack', async () => {
+  await act(async () =>
+    webview().props.onLoad({
+      nativeEvent: { url: 'https://simsgpt.6tst.com/chat' },
+    }),
+  );
+  await act(async () =>
+    webview().props.onNavigationStateChange({
+      url: 'https://simsgpt.6tst.com/chat?view=dashboard',
+      canGoBack: false,
+    }),
+  );
+  let consumed = false;
+  await act(async () => {
+    consumed = hardwareBack();
+  });
+  expect(consumed).toBe(true);
+  expect(mockInjectJavaScript).toHaveBeenCalledTimes(1);
 });
 
 it('retries the failed SIMS destination instead of reloading the previous page', async () => {
