@@ -3,7 +3,7 @@ import {Linking, PermissionsAndroid, Platform} from 'react-native';
 export type LaunchPermissionIssue = 'microphone' | 'camera' | 'photos';
 
 export const APP_PERMISSION_USAGE_REASON =
-  'SIMS uses camera, microphone, and your photo library when you attach files or when the website requests media access during chat.';
+  'SimsGPT uses camera, microphone, and your photo library when you attach files or when the website requests media access during chat.';
 
 type AndroidPermissionEntry = {
   permission: (typeof PermissionsAndroid.PERMISSIONS)[keyof typeof PermissionsAndroid.PERMISSIONS];
@@ -31,7 +31,7 @@ const ANDROID_LAUNCH_PERMISSIONS: AndroidPermissionEntry[] = [
 ];
 
 const ANDROID_RATIONALE = {
-  title: 'Allow access for SIMS',
+  title: 'Allow access for SimsGPT',
   message: APP_PERMISSION_USAGE_REASON,
   buttonPositive: 'Allow',
   buttonNegative: 'Deny',

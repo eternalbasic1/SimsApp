@@ -11,6 +11,7 @@ node_require('react-native-permissions/scripts/setup.rb')
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
+workspace 'SimsGPT'
 
 setup_permissions([
   'Camera',
@@ -25,7 +26,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'SimsMobile' do
+target 'SimsGPT' do
   config = use_native_modules!
 
   use_react_native!(

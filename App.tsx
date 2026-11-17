@@ -22,7 +22,7 @@ export default function App() {
       ) {
         Alert.alert(
           'Microphone access blocked',
-          'SIMS needs the microphone when the website records audio in chat. Enable Microphone for SIMS Gpt in Settings, then return to the app.',
+          'SimsGPT needs the microphone when the website records audio in chat. Enable Microphone for SimsGPT in Settings, then return to the app.',
           [
             {text: 'Not now', style: 'cancel'},
             {

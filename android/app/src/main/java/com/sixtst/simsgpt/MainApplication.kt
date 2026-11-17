@@ -1,4 +1,4 @@
-package com.vineethreddy.simsmobile.dev
+package com.sixtst.simsgpt
 
 import android.app.Application
 import com.facebook.react.PackageList

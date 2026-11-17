@@ -64,13 +64,13 @@ afterEach(async () => {
 });
 
 it('shows loading until the initial page finishes', async () => {
-  expect(texts()).toContain('Loading SIMS…');
+  expect(texts()).toContain('Loading SimsGPT…');
   await act(async () =>
     webview().props.onLoadEnd({
       nativeEvent: { url: 'https://simsgpt.6tst.com/chat' },
     }),
   );
-  expect(texts()).not.toContain('Loading SIMS…');
+  expect(texts()).not.toContain('Loading SimsGPT…');
 });
 
 it('keeps a load failure visible through load-end and retries the current document', async () => {
@@ -78,12 +78,12 @@ it('keeps a load failure visible through load-end and retries the current docume
     webview().props.onError({ nativeEvent: { description: 'offline' } }),
   );
   await act(async () => webview().props.onLoadEnd({ nativeEvent: {} }));
-  expect(texts()).toContain('Unable to load SIMS');
+  expect(texts()).toContain('Unable to load SimsGPT');
   await act(async () =>
     tree.root.findByProps({ accessibilityRole: 'button' }).props.onPress(),
   );
-  expect(texts()).not.toContain('Unable to load SIMS');
-  expect(texts()).toContain('Loading SIMS…');
+  expect(texts()).not.toContain('Unable to load SimsGPT');
+  expect(texts()).toContain('Loading SimsGPT…');
   expect(mockReload).toHaveBeenCalledTimes(1);
 });
 
@@ -97,7 +97,7 @@ it('does not replace chat when an image or iframe returns an HTTP error', async 
       },
     }),
   );
-  expect(texts()).not.toContain('Unable to load SIMS');
+  expect(texts()).not.toContain('Unable to load SimsGPT');
 });
 
 it('shows Retry for a failed main document after an authentication redirect', async () => {
@@ -114,7 +114,7 @@ it('shows Retry for a failed main document after an authentication redirect', as
       },
     }),
   );
-  expect(texts()).toContain('Unable to load SIMS');
+  expect(texts()).toContain('Unable to load SimsGPT');
 });
 
 it('allows company HTTPS redirects and blocks HTTP or executable URLs', async () => {
@@ -146,7 +146,7 @@ it('loads an HTTPS new-window link in the current WebView session', async () => 
     }),
   );
   expect(webview().props.source.uri).toBe('https://example.com/report');
-  expect(texts()).toContain('Loading SIMS…');
+  expect(texts()).toContain('Loading SimsGPT…');
 });
 
 it('ignores unsupported new-window schemes rather than launching another app', async () => {
@@ -185,7 +185,7 @@ it('opens mail links only after a user click and handles failure without losing 
   });
   expect(openURL).toHaveBeenCalledWith('mailto:help@example.com');
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(texts()).not.toContain('Unable to load SIMS');
+  expect(texts()).not.toContain('Unable to load SimsGPT');
 });
 
 it('reloads after iOS content-process termination', async () => {
@@ -194,7 +194,7 @@ it('reloads after iOS content-process termination', async () => {
     webview().props.onContentProcessDidTerminate({ nativeEvent: {} }),
   );
   expect(mockReload).toHaveBeenCalledTimes(1);
-  expect(texts()).toContain('Loading SIMS…');
+  expect(texts()).toContain('Loading SimsGPT…');
 });
 
 it('remounts the Android view at the latest HTTPS document after renderer loss', async () => {
@@ -212,7 +212,7 @@ it('remounts the Android view at the latest HTTPS document after renderer loss',
   expect(webview().props.source.uri).toBe(
     'https://simsgpt.6tst.com/chat?conversation=12',
   );
-  expect(texts()).toContain('Loading SIMS…');
+  expect(texts()).toContain('Loading SimsGPT…');
 });
 
 it('tracks the finished redirect so a later popup can navigate back to the original URL', async () => {
@@ -254,13 +254,13 @@ it('dismisses the native error overlay on hardware back', async () => {
   await act(async () =>
     webview().props.onError({ nativeEvent: { description: 'offline' } }),
   );
-  expect(texts()).toContain('Unable to load SIMS');
+  expect(texts()).toContain('Unable to load SimsGPT');
   let consumed = false;
   await act(async () => {
     consumed = hardwareBack();
   });
   expect(consumed).toBe(true);
-  expect(texts()).not.toContain('Unable to load SIMS');
+  expect(texts()).not.toContain('Unable to load SimsGPT');
 });
 
 it('navigates the WebView back when it has native history', async () => {

@@ -246,13 +246,13 @@ export default function SimsWebViewScreen() {
           accessibilityLiveRegion="polite"
         >
           <ActivityIndicator size="large" color="#273b74" />
-          <Text style={styles.message}>Loading SIMS…</Text>
+          <Text style={styles.message}>Loading SimsGPT…</Text>
         </View>
       )}
       {failed && (
         <View style={styles.overlay} accessibilityLiveRegion="assertive">
           <Text accessibilityRole="header" style={styles.title}>
-            Unable to load SIMS
+            Unable to load SimsGPT
           </Text>
           <Text style={styles.message}>
             Check your internet connection and try again.
