@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>SIMS Gpt</string>
+	<string>SimsGPT</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -27,13 +27,15 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>SIMS uses the camera when you capture photos or video to attach in chat.</string>
+	<string>SimsGPT uses the camera when you capture photos or video to attach in chat.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>SIMS uses the microphone when the website records audio during chat.</string>
+	<string>SimsGPT uses the microphone when you dictate or record audio in chat.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>SimsGPT uses Apple speech recognition to turn what you say into text in the chat composer when you tap the microphone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>SIMS accesses your photo library when you choose images or files to upload.</string>
+	<string>SimsGPT accesses your photo library when you choose images or files to upload.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>SIMS can save files from chat to your photo library when you download them.</string>
+	<string>SimsGPT can save files from chat to your photo library when you download them.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

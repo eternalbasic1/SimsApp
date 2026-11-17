@@ -1,8 +1,8 @@
-# SIMS Mobile — iOS prototype
+# SimsGPT mobile app
 
 A separate React Native Community CLI application opening **https://simsgpt.6tst.com/chat** in a WebView. The SIMS website and backend remain unchanged. The [Android device guide](docs/android-device-testing.md) covers the first Samsung APK and device testing. TestFlight and store submission are separate milestones.
 
-**Current status.** The SIMS WebView app is implemented. The untouched starter compiled for iPhone with signing disabled and is preserved at commit `52bc1f4`. The SIMS Release build compiled, was signed, and installed on the paired iPhone. The first launch was denied by iOS. The rebuilt and freshly signed Release app installed and launched successfully. Company sign-in and streamed chat are next in the device session.
+**Earlier prototype testing.** The SIMS WebView app is implemented. The untouched starter compiled for iPhone with signing disabled and is preserved at commit `52bc1f4`. The SIMS Release build compiled, was signed, and installed on the paired iPhone. The first launch was denied by iOS. The rebuilt and freshly signed Release app installed and launched successfully. The renamed app needs a fresh device pass for launch, company sign-in, and streamed chat.
 
 ## 1. Completed preparation
 
@@ -25,7 +25,7 @@ Shell setup adds Ruby/gem executables to PATH and selects NVM's default Node. Ho
 
 - React Native **0.88.1**, React **19.3.0**, Community CLI **20.2.0**.
 - `react-native-webview` **17.1.0**; matching template TypeScript, Babel, Metro, Jest, and safe-area dependencies. Record exact installed versions in lockfiles.
-- Native project/scheme **SimsMobile**; display name **SIMS GPT**; temporary bundle identifier **com.vineethreddy.simsmobile.dev**; starter artwork.
+- Native project/scheme **SimsGPT**; display name **SimsGPT**; Android application ID and iOS bundle identifier **com.sixtst.simsgpt**; existing blue SIMS launcher artwork.
 - Public SIMS URL in TypeScript configuration. No `.env`, native token bridge, injected JavaScript, or new authentication/backend APIs.
 - Shared application code stays suitable for Android; its toolchain and deliverables are a later milestone.
 
@@ -80,9 +80,9 @@ xcrun devicectl device info details --device YOUR_IPHONE_UDID
 
 Replace `YOUR_IPHONE_UDID` with the identifier from the list. Confirm paired/connected and Developer Mode enabled. The user enters all passwords, passcodes, and Apple/company credentials.
 
-After app creation, add/select your account under Xcode Settings → Apple Accounts. Open the application target's Signing & Capabilities, enable automatic signing, choose your team, and use `com.vineethreddy.simsmobile.dev`. A free Apple account is sufficient for initial personal-device development, subject to Apple's provisioning limits. It does not provide general team distribution; periodic rebuilding/re-signing may be necessary.
+After app creation, add/select your account under Xcode Settings → Apple Accounts. Open the application target's Signing & Capabilities, enable automatic signing, choose your team, and use `com.sixtst.simsgpt`. A free Apple account is sufficient for initial personal-device development, subject to Apple's provisioning limits. It does not provide general team distribution; periodic rebuilding/re-signing may be necessary.
 
-## 5. Implementation order
+## 5. Original prototype implementation order
 
 1. Preserve this repository's Git history, README, and toolchain records. Generate a pinned SimsMobile starter in a temporary folder, then merge its files here without replacing `.git` or nesting another repository.
 2. Migrate the prepared Gemfile/lockfile to the app root; add Node/Ruby version files, npm lockfile, and ignores. Retain matching template configuration.
@@ -95,13 +95,11 @@ After app creation, add/select your account under Xcode Settings → Apple Accou
 
 See [the detailed iOS implementation plan](docs/ios-implementation-plan.md). The implementation plan records the original sequence and remaining device checks.
 
-## 6. Clone and install dependencies after scaffolding
+## 6. Install dependencies
 
-Use the local feature branch checkout for the current implementation. A fresh clone needs access to a branch containing the app commits.
+Use the existing mobile checkout. Run the dependency commands from the repository root with the Node and Ruby versions described above.
 
 ```sh
-git clone https://github.com/eternalbasic1/SimsApp.git
-cd SimsApp
 nvm use
 npm ci
 bundle config set --local path vendor/bundle
@@ -111,9 +109,9 @@ bundle exec pod install
 cd ..
 ```
 
-Use the existing checkout instead of cloning when appropriate. Before scaffolding, the Ruby bundle can already be checked from `toolchain/`; afterward its Gemfile and lockfile belong at the app root. Commit `package-lock.json`, `Gemfile.lock`, and `ios/Podfile.lock`. Ignore dependencies, Pods, caches, build products, local paths, and signing material.
+The npm, Ruby, and CocoaPods lockfiles are tracked. Dependencies, Pods, caches, local paths, and signing material stay local.
 
-After project creation, configure the local Xcode Node executable from the app root:
+If Xcode cannot locate Node, configure the local Xcode Node executable from the app root:
 
 ```sh
 nvm use
@@ -124,9 +122,9 @@ Keep this machine-specific file ignored. Recreate it after changing Node's insta
 
 ## 7. Run a development build
 
-1. After installing Pods, open `ios/SimsMobile.xcworkspace` in Xcode, rather than the `.xcodeproj`.
+1. After installing Pods, open `ios/SimsGPT.xcworkspace` in Xcode, rather than the `.xcodeproj`.
 2. Complete account/team and automatic-signing setup above.
-3. Select the SimsMobile scheme in Debug configuration and your physical iPhone as the destination.
+3. Select the SimsGPT scheme in Debug configuration and your physical iPhone as the destination.
 4. From the app root, start Metro in Terminal:
 
 ```sh
@@ -146,8 +144,8 @@ Run these commands from the app root after selecting the development team in Xco
 
 ```sh
 xcodebuild \
-  -workspace ios/SimsMobile.xcworkspace \
-  -scheme SimsMobile \
+  -workspace ios/SimsGPT.xcworkspace \
+  -scheme SimsGPT \
   -configuration Release \
   -destination 'id=YOUR_IPHONE_UDID' \
   -derivedDataPath build/ios \
@@ -156,11 +154,11 @@ xcodebuild \
 
 xcrun devicectl device install app \
   --device YOUR_IPHONE_UDID \
-  build/ios/Build/Products/Release-iphoneos/SimsMobile.app
+  build/ios/Build/Products/Release-iphoneos/SimsGPT.app
 
 xcrun devicectl device process launch \
   --device YOUR_IPHONE_UDID \
-  com.vineethreddy.simsmobile.dev
+  com.sixtst.simsgpt
 ```
 
 Validate workspace/scheme/product path against the generated app and correct these instructions if needed. Alternatively, edit the scheme's Run configuration to Release in Xcode and Run on the phone. Restore Debug afterward for development.

@@ -30,7 +30,7 @@ class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate
     #endif
 
     reactNativeFactory?.startReactNative(
-      withModuleName: "SimsMobile",
+      withModuleName: "SimsGPT",
       in: window,
       connectionOptions: connectionOptions
     )

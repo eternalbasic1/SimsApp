@@ -81,9 +81,9 @@ android {
         }
     }
 
-    namespace "com.vineethreddy.simsmobile.dev"
+    namespace "com.sixtst.simsgpt"
     defaultConfig {
-        applicationId "com.vineethreddy.simsmobile.dev"
+        applicationId "com.sixtst.simsgpt"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
