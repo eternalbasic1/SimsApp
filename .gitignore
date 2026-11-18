@@ -28,6 +28,8 @@ build/
 .idea
 .gradle
 local.properties
+keystore.properties
+upload-keystore.jks
 *.iml
 *.hprof
 .cxx/

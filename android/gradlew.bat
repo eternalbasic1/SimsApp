@@ -37,6 +37,11 @@ if "%DIRNAME%"=="" set DIRNAME=.
 set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
+@rem Cursor can set GRADLE_USER_HOME under cursor-sandbox-cache; those paths exceed
+@rem Windows MAX_PATH (~260) and break CMake/ninja (React Native New Architecture).
+if not defined GRADLE_USER_HOME set "GRADLE_USER_HOME=%USERPROFILE%\.gradle"
+echo.%GRADLE_USER_HOME%| findstr /I /C:"cursor-sandbox-cache" >nul && set "GRADLE_USER_HOME=%USERPROFILE%\.gradle"
+
 @rem Resolve any "." and ".." in APP_HOME to make it shorter.
 for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 

@@ -7,6 +7,13 @@ if (-not (Test-Path "$jbr\bin\java.exe")) {
 }
 
 $env:JAVA_HOME = $jbr
+
+# Avoid Cursor sandbox Gradle cache — paths exceed Windows MAX_PATH for native builds.
+$defaultGradleHome = Join-Path $env:USERPROFILE '.gradle'
+if (-not $env:GRADLE_USER_HOME -or $env:GRADLE_USER_HOME -match 'cursor-sandbox-cache') {
+  $env:GRADLE_USER_HOME = $defaultGradleHome
+}
+
 $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
 if ($env:ANDROID_HOME) {
   $env:PATH = "$env:JAVA_HOME\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator;$env:PATH"
